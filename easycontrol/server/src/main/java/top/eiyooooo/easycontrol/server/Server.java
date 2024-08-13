@@ -51,11 +51,16 @@ public class Server {
                     try {
                         String input = scanner.nextLine();
                         L.d("INPUT: " + input);
-                        if (input.startsWith("/exit")) System.exit(0);
+                        if (input.startsWith("/exit")) {
+                            releaseAllVirtualDisplay();
+                            System.exit(0);
+                        }
                         else if (input.startsWith("/")) handleRequest(parseRequest(input));
                         else throw new Exception("Unknown command");
                     } catch (Exception e) {
                         L.e("consoleInputHandler error", e);
+                        releaseAllVirtualDisplay();
+                        System.exit(0);
                     }
                 }
             }
@@ -233,12 +238,12 @@ public class Server {
                     JSONObject tasks = channel.getRecentTasksJson(25, 0, 0);
                     JSONArray tasks_data = tasks.getJSONArray("data");
                     for (int i = 0; i < tasks_data.length(); i++) {
-                        JSONObject task = tasks_data.getJSONObject(i);
-                        if (id.equals(String.valueOf(task.getInt("displayId")))) {
-                            try {
+                        try {
+                            JSONObject task = tasks_data.getJSONObject(i);
+                            if (id.equals(String.valueOf(task.getInt("displayId")))) {
                                 Channel.execReadOutput("am display move-stack " + task.getInt("id") + " 0");
-                            } catch (Exception ignored) {
                             }
+                        } catch (Exception ignored) {
                         }
                     }
                     display.first.release();
@@ -313,6 +318,33 @@ public class Server {
         } catch (Exception e) {
             postResponse(e.getMessage());
             L.e("handleRequest error", e);
+        }
+    }
+
+    private void releaseAllVirtualDisplay() {
+        if (cache.isEmpty()) return;
+        try {
+            JSONObject tasks = channel.getRecentTasksJson(25, 0, 0);
+            JSONArray tasks_data = tasks.getJSONArray("data");
+            for (int i = 0; i < tasks_data.length(); i++) {
+                try {
+                    JSONObject task = tasks_data.getJSONObject(i);
+                    if (cache.containsKey(task.getInt("displayId"))) {
+                        Channel.execReadOutput("am display move-stack " + task.getInt("id") + " 0");
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+        } catch (Exception e) {
+            L.e("releaseAllVirtualDisplay error", e);
+        }
+        for (int displayId : cache.keySet()) {
+            Pair<VirtualDisplay, Surface> display = cache.get(displayId);
+            if (display != null) {
+                display.first.release();
+                display.second.release();
+            }
+            cache.remove(displayId);
         }
     }
 }
