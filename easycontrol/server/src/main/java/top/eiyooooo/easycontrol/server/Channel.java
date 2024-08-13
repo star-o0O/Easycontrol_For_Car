@@ -24,8 +24,9 @@ import android.media.MediaCodec;
 import android.os.Build;
 import android.os.Looper;
 import android.util.DisplayMetrics;
+import android.util.Pair;
 import android.view.Surface;
-import android.view.SurfaceView;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import top.eiyooooo.easycontrol.server.helper.FakeContext;
@@ -441,21 +442,14 @@ public class Channel {
         return jsonObjectResult;
     }
 
-    public VirtualDisplay createVirtualDisplay(int width, int height, int density) throws Exception {
+    public Pair<VirtualDisplay, Surface> createVirtualDisplay(int width, int height, int density) throws Exception {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
             throw new Exception("Virtual display is not supported before Android 11");
-        Surface surface;
-        try {
-            SurfaceView surfaceView = new SurfaceView(FakeContext.get());
-            surface = surfaceView.getHolder().getSurface();
-        } catch (Exception ignored) {
-            L.w("Failed to create SurfaceView, trying MediaCodec");
-            surface = MediaCodec.createPersistentInputSurface();
-        }
-        if (surface == null) throw new Exception("Failed to create surface");
+        Surface surface = MediaCodec.createPersistentInputSurface();
         android.hardware.display.DisplayManager displayManager = DisplayManager.class.getDeclaredConstructor(Context.class).newInstance(FakeContext.get());
         int flags = getVirtualDisplayFlags();
-        return displayManager.createVirtualDisplay("easycontrol_for_car", width, height, density, surface, flags);
+        VirtualDisplay virtualDisplay = displayManager.createVirtualDisplay("easycontrol_for_car", width, height, density, surface, flags);
+        return new Pair<>(virtualDisplay, surface);
     }
 
     private static int getVirtualDisplayFlags() {

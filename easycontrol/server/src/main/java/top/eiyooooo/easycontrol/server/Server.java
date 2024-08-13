@@ -2,7 +2,10 @@ package top.eiyooooo.easycontrol.server;
 
 import android.hardware.display.VirtualDisplay;
 import android.os.Build;
+import android.util.Pair;
 import android.view.Display;
+import android.view.Surface;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import top.eiyooooo.easycontrol.server.entity.DisplayInfo;
@@ -92,7 +95,7 @@ public class Server {
         return request;
     }
 
-    Map<Integer, VirtualDisplay> cache = new HashMap<>();
+    Map<Integer, Pair<VirtualDisplay, Surface>> cache = new HashMap<>();
 
     private void handleRequest(HashMap<String, String> request) {
         try {
@@ -170,9 +173,9 @@ public class Server {
                     if (line3 != null) density = Integer.parseInt(line3);
                     else density = defaultDisplay.density;
 
-                    VirtualDisplay display = channel.createVirtualDisplay(width, height, density);
+                    Pair<VirtualDisplay, Surface> display = channel.createVirtualDisplay(width, height, density);
                     if (display == null) throw new Exception("Failed to create virtual display");
-                    int createdDisplayId = display.getDisplay().getDisplayId();
+                    int createdDisplayId = display.first.getDisplay().getDisplayId();
                     cache.put(createdDisplayId, display);
                     int[] displayIds = DisplayManager.getDisplayIds();
                     for (int displayId : displayIds) {
@@ -213,10 +216,10 @@ public class Server {
                         if (line2 != null) Channel.execReadOutput("wm size " + width + "x" + height);
                         if (line4 != null) Channel.execReadOutput("wm density " + density);
                     } else {
-                        VirtualDisplay virtualDisplay = cache.get(id);
+                        Pair<VirtualDisplay, Surface> virtualDisplay = cache.get(id);
                         if (virtualDisplay == null)
                             throw new Exception("specified virtual display not found, it might not be created by this server");
-                        virtualDisplay.resize(width, height, density);
+                        virtualDisplay.first.resize(width, height, density);
                     }
                     postResponse("success resize display, id -> " + id);
                     break;
@@ -224,7 +227,7 @@ public class Server {
                 case "/releaseVirtualDisplay": {
                     String id = request.get("id");
                     if (id == null) throw new Exception("parameter 'id' not found");
-                    VirtualDisplay display = cache.get(Integer.parseInt(id));
+                    Pair<VirtualDisplay, Surface> display = cache.get(Integer.parseInt(id));
                     if (display == null)
                         throw new Exception("specified virtual display not found, it might not be created by this server");
                     JSONObject tasks = channel.getRecentTasksJson(25, 0, 0);
@@ -238,7 +241,8 @@ public class Server {
                             }
                         }
                     }
-                    display.release();
+                    display.first.release();
+                    display.second.release();
                     cache.remove(Integer.parseInt(id));
                     postResponse("success release display, id -> " + id);
                     break;
