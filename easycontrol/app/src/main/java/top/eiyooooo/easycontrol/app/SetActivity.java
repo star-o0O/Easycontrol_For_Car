@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity;
+
+import top.eiyooooo.easycontrol.app.databinding.ActivitySetBinding;
 import top.eiyooooo.easycontrol.app.entity.AppData;
 import top.eiyooooo.easycontrol.app.helper.PublicTools;
-import top.eiyooooo.easycontrol.app.databinding.ActivitySetBinding;
 import top.eiyooooo.easycontrol.app.helper.ShortcutHelper;
 
 public class SetActivity extends Activity {
@@ -127,7 +129,7 @@ public class SetActivity extends Activity {
     setActivity.setAbout.addView(PublicTools.createTextCard(this, getString(R.string.set_about_website), () -> PublicTools.startUrl(this, "https://github.com/eiyooooo/Easycontrol_For_Car")).getRoot());
     setActivity.setAbout.addView(PublicTools.createTextCard(this, getString(R.string.set_about_how_to_use), () -> PublicTools.openWebViewActivity(this, "file:///android_asset/usage.html")).getRoot());
     setActivity.setAbout.addView(PublicTools.createTextCard(this, getString(R.string.set_about_privacy), () -> PublicTools.startUrl(this, "https://github.com/eiyooooo/Easycontrol_For_Car/blob/main/PRIVACY.md")).getRoot());
-    setActivity.setAbout.addView(PublicTools.createTextCard(this, getString(R.string.set_license), () -> PublicTools.openWebViewActivity(this, "file:///android_asset/license.html")).getRoot());
+    setActivity.setAbout.addView(PublicTools.createTextCard(this, getString(R.string.set_license), () -> startActivity(new Intent(this, OssLicensesMenuActivity.class))).getRoot());//TODO
     setActivity.setAbout.addView(PublicTools.createTextCard(this, getString(R.string.set_about_version) + BuildConfig.VERSION_NAME, () -> PublicTools.startUrl(this, "https://github.com/eiyooooo/Easycontrol_For_Car/releases")).getRoot());
     setActivity.setAbout.addView(PublicTools.createTextCard(this, getString(R.string.car_version_message), () -> PublicTools.startUrl(this, "https://github.com/eiyooooo/Easycontrol_For_Car")).getRoot());
   }
