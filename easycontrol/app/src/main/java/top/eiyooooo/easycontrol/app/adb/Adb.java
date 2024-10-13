@@ -3,15 +3,17 @@ package top.eiyooooo.easycontrol.app.adb;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbDevice;
+import android.util.Pair;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import android.util.Pair;
 import top.eiyooooo.easycontrol.app.BuildConfig;
 import top.eiyooooo.easycontrol.app.R;
 import top.eiyooooo.easycontrol.app.buffer.Buffer;
@@ -90,10 +92,8 @@ public class Adb {
 
   public final void startServer() {
     try {
-      if (BuildConfig.ENABLE_DEBUG_FEATURE || !runAdbCmd("ls /data/local/tmp/easycontrol_*").contains(serverName)) {
-        runAdbCmd("rm /data/local/tmp/easycontrol_* ");
-        pushFile(AppData.main.getResources().openRawResource(R.raw.easycontrol_server), serverName);
-      }
+      runAdbCmd("rm /data/local/tmp/easycontrol_* ");
+      pushFile(AppData.main.getResources().openRawResource(R.raw.easycontrol_server), serverName);
       if (serverShell != null) serverShell.close();
       String cmd = "CLASSPATH=" + serverName + " app_process / top.eiyooooo.easycontrol.server.Server\n";
       serverShell = getShell();
