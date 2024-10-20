@@ -96,7 +96,7 @@ public class AudioDecode {
     // 音频参数
     int sampleRate = 48000;
     int channelCount = 2;
-    int bitRate = 96000;
+    int bitRate = 192000;
     MediaFormat decodecFormat = MediaFormat.createAudioFormat(codecMime, sampleRate, channelCount);
     decodecFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitRate);
     // 获取音频标识头
