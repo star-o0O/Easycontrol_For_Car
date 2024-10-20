@@ -271,14 +271,14 @@ public class PublicTools {
   }
 
   // 创建设备参数设置页面
-  private static final String[] maxFpsList = new String[]{"90", "60", "40", "30", "20", "10"};
-  private static final String[] maxVideoBitList = new String[]{"12", "8", "4", "2", "1"};
+  private static final String[] maxFpsList = new String[]{"120", "90", "60", "40", "30", "20", "10"};
+  private static final String[] maxVideoBitList = new String[]{"20", "16", "12", "8", "4", "2", "1"};
 
   public static void createDeviceOptionSet(Context context, ViewGroup fatherLayout, Device device) {
     // Device为null，则视为设置默认参数
     boolean setDefault = device == null;
     // 数组适配器
-    ArrayAdapter<String> maxSizeAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, new String[]{context.getString(R.string.option_max_size_original), "2560", "1920", "1600", "1280", "1024", "800"});
+    ArrayAdapter<String> maxSizeAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, new String[]{context.getString(R.string.option_max_size_original), "3840", "2560", "1920", "1600", "1280", "1024", "800"});
     ArrayAdapter<String> maxFpsAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, maxFpsList);
     ArrayAdapter<String> maxVideoBitAdapter = new ArrayAdapter<>(AppData.main, R.layout.item_spinner_item, maxVideoBitList);
     // 添加参数视图
