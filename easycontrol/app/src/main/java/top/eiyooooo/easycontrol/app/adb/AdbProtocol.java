@@ -20,7 +20,7 @@ public class AdbProtocol {
   public static final int CMD_WRTE = 0x45545257;
 
   public static final int CONNECT_VERSION = 0x01000000;
-  public static final int CONNECT_MAXDATA = 4096 * 1024;
+  public static final int CONNECT_MAXDATA = 10240 * 1024;
 
   public static final byte[] CONNECT_PAYLOAD = "host::\0".getBytes();
 
